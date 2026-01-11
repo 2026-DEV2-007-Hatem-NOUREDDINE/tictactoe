@@ -65,5 +65,9 @@ gradlePlugin {
             id = "com.hatem.noureddine.tictactoe.roborazzi"
             implementationClass = "com.hatem.noureddine.tictactoe.buildlogic.RoborazziConventionPlugin"
         }
+        register("jacocoReport") {
+            id = "com.hatem.noureddine.tictactoe.jacoco.report"
+            implementationClass = "com.hatem.noureddine.tictactoe.buildlogic.JacocoReportConventionPlugin"
+        }
     }
 }

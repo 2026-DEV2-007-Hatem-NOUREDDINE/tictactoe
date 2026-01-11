@@ -104,6 +104,22 @@ class GameViewModelTest {
         }
 
     @Test
+    fun `reset with default size uses 3`() =
+        runTest {
+            // Given
+            val defaultGame = Game(size = 3)
+            every { getGameUseCase() } returns defaultGame
+
+            // When
+            viewModel.reset()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
+            verify { resetGameUseCase(3) }
+            assertEquals(3, viewModel.uiState.value.boardSize)
+        }
+
+    @Test
     fun `play ignores PositionTaken error`() =
         runTest {
             // Given
@@ -226,5 +242,131 @@ class GameViewModelTest {
 
             // Verify error is set
             assert(newViewModel.uiState.value.errorMessageId != null)
+        }
+
+    @Test
+    fun `init with saved state calls loadGameUseCase`() =
+        runTest {
+            // Given
+            val savedState =
+                GameState(
+                    board = mapOf("0,0" to Player.X, "1,1" to Player.O),
+                    currentPlayer = Player.X,
+                    winner = null,
+                    isDraw = false,
+                    size = 3,
+                )
+            val restoredGame = Game(initialState = savedState)
+
+            val newSavedStateHandle: SavedStateHandle = mockk(relaxed = true)
+            every { newSavedStateHandle.get<GameState>("game_state") } returns savedState
+            every { getGameUseCase() } returns restoredGame
+
+            // When
+            val newViewModel =
+                GameViewModel(
+                    newSavedStateHandle,
+                    playTurnUseCase,
+                    resetGameUseCase,
+                    getGameUseCase,
+                    loadGameUseCase,
+                    getSnapshotUseCase,
+                )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
+            verify { loadGameUseCase(savedState) }
+            assertEquals(Player.X, newViewModel.uiState.value.currentPlayer)
+        }
+
+    @Test
+    fun `uiState reflects winner when game is won`() =
+        runTest {
+            // Given a game with a winner
+            val wonGame =
+                Game().apply {
+                    play(0, 0) // X
+                    play(1, 0) // O
+                    play(0, 1) // X
+                    play(1, 1) // O
+                    play(0, 2) // X wins
+                }
+            every { getGameUseCase() } returns wonGame
+
+            // When
+            val newViewModel =
+                GameViewModel(
+                    savedStateHandle,
+                    playTurnUseCase,
+                    resetGameUseCase,
+                    getGameUseCase,
+                    loadGameUseCase,
+                    getSnapshotUseCase,
+                )
+
+            // Then
+            assertEquals(Player.X, newViewModel.uiState.value.winner)
+        }
+
+    @Test
+    fun `uiState reflects isDraw when game is drawn`() =
+        runTest {
+            // Given a drawn game
+            val drawnGame =
+                Game().apply {
+                    play(0, 0) // X
+                    play(1, 1) // O
+                    play(0, 1) // X
+                    play(0, 2) // O
+                    play(2, 0) // X
+                    play(1, 0) // O
+                    play(1, 2) // X
+                    play(2, 1) // O
+                    play(2, 2) // X - Draw
+                }
+            every { getGameUseCase() } returns drawnGame
+
+            // When
+            val newViewModel =
+                GameViewModel(
+                    savedStateHandle,
+                    playTurnUseCase,
+                    resetGameUseCase,
+                    getGameUseCase,
+                    loadGameUseCase,
+                    getSnapshotUseCase,
+                )
+
+            // Then
+            assertEquals(true, newViewModel.uiState.value.isDraw)
+        }
+
+    @Test
+    fun `board in uiState matches game board`() =
+        runTest {
+            // Given a game with some moves
+            val game =
+                Game().apply {
+                    play(0, 0) // X
+                    play(1, 1) // O
+                }
+            every { getGameUseCase() } returns game
+
+            // When
+            val newViewModel =
+                GameViewModel(
+                    savedStateHandle,
+                    playTurnUseCase,
+                    resetGameUseCase,
+                    getGameUseCase,
+                    loadGameUseCase,
+                    getSnapshotUseCase,
+                )
+
+            // Then
+            val board = newViewModel.uiState.value.board
+            assertEquals(Player.X, board[0][0])
+            assertEquals(Player.O, board[1][1])
+            assertEquals(null, board[0][1])
         }
 }

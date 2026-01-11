@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.internal.sonarqube)
-    id("jacoco")
+    alias(libs.plugins.internal.jacoco)
 }
 
 // Task to copy Git hooks

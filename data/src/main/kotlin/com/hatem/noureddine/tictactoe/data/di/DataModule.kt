@@ -17,9 +17,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DataModule {
-    /**
-     * Binds the [GameRepositoryImpl] to the [GameRepository] interface.
-     */
     @Binds
     @Singleton
     abstract fun bindGameRepository(impl: GameRepositoryImpl): GameRepository

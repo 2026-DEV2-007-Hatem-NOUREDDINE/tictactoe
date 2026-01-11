@@ -174,7 +174,7 @@ class GameScreenScreenshotTest {
                 )
             }
         }
-        composeTestRule.onRoot().captureRoboImage("app/build/outputs/roborazzi/game_flow_00_initial.png")
+        composeTestRule.onRoot().captureRoboImage("../snapshots/roborazzi/game_flow_00_initial.png")
 
         var currentBoard = initialBoard
         var currentPlayer = Player.X
@@ -212,7 +212,7 @@ class GameScreenScreenshotTest {
 
             composeTestRule.waitForIdle()
             composeTestRule.onRoot().captureRoboImage(
-                "app/build/outputs/roborazzi/game_flow_0${index + 1}_move_${row}_$col.png",
+                filePath = "../snapshots/roborazzi/game_flow_0${index + 1}_move_${row}_$col.png",
             )
         }
     }
