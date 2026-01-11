@@ -17,11 +17,8 @@
 > - X always goes first.
 > - Players cannot play on a played position.
 > - Players alternate placing X’s and O’s on the board until either:
-    >
-
-- One player has three in a row, horizontally, vertically or diagonally
-
->     - All nine squares are filled.
+> - One player has three in a row, horizontally, vertically or diagonally
+> - All nine squares are filled.
 > - If a player is able to draw three X’s or three O’s in a row, that player wins.
 > - If all nine squares are filled and neither player has three in a row, the game is a draw.
 >
@@ -176,6 +173,274 @@ We follow **Conventional Commits**: `<type>(<scope>): <subject>`
 - **Naming**: Use standard prefixes: `feature/`, `bugfix/`, `hotfix/`, `release/`
 - **Hook**: A `pre-push` hook validates branch names.
 
+## 4. A Deep Dive into Test-Driven Development (TDD)
+
+Test-Driven Development (TDD) is not just about writing tests; it's a design process. By writing a failing test *before* writing the implementation
+code, we let the tests guide the design of our application. The process follows a simple, repetitive cycle:
+
+1. **Red**: Write a small, failing test for a single new feature.
+2. **Green**: Write the *absolute minimum* amount of code required to make the test pass.
+3. **Refactor**: Clean up the code to improve its structure and maintainability without changing its behavior.
+
+This section simulates how the `Game` class was built from the ground up using this TDD workflow.
+
+### Step 1: Defining the Game's Initial State
+
+**RED**: We start with nothing. Our first goal is to define what a new game looks like. We write a test for a `Game` class that doesn't exist yet.
+
+```kotlin
+// In GameTest.kt
+@Test
+fun `initial state is correct`() {
+    val game = Game() // Fails: 'Game' class does not exist
+    assertEquals(Player.X, game.currentPlayer)
+    assertNull(game.winner)
+    assertFalse(game.isDraw)
+}
+```
+
+This test immediately fails because we have no `Game` class.
+
+**GREEN**: We write the simplest possible code to make the test pass.
+
+```kotlin
+// In Game.kt
+enum class Player { X, O }
+
+class Game {
+    val currentPlayer: Player = Player.X
+    val winner: Player? = null
+    val isDraw: Boolean = false
+}
+```
+
+The test now passes. We have defined the initial state of our game.
+
+**REFACTOR**: The code is trivial. No refactoring is needed.
+
+### Step 2: Making the First Move
+
+**RED**: How does the game change when a player makes a move? Let's test that the current player switches from X to O.
+
+```kotlin
+// In GameTest.kt
+@Test
+fun `playing a move updates current player`() {
+    val game = Game()
+    game.play(0, 0) // Fails: 'play' method does not exist
+    assertEquals(Player.O, game.currentPlayer)
+}
+```
+
+**GREEN**: We add a placeholder `play` method to `Game.kt` and change `currentPlayer` to be a `var`.
+
+```kotlin
+// In Game.kt
+class Game {
+    var currentPlayer: Player = Player.X
+        private set // Encapsulate state change
+    // ... other properties
+
+    fun play(row: Int, col: Int) {
+        currentPlayer = Player.O
+    }
+}
+```
+
+The test passes. We have a concept of "playing a turn."
+
+**REFACTOR**: We can make the setter for `currentPlayer` private to ensure it can only be changed by the `Game` class itself. This encapsulation is a
+good first refactor.
+
+### Step 3: Recording the Move
+
+**RED**: The player changed, but where did their 'X' go? We need to record moves on a board.
+
+```kotlin
+// In GameTest.kt
+@Test
+fun `playing a move updates the board`() {
+    val game = Game()
+    game.play(0, 0)
+    assertEquals(Player.X, game.getCell(0, 0)) // Fails: `getCell` does not exist
+}
+```
+
+**GREEN**: We add a board and a way to query it. We also fix the player-switching logic, which was too simple before.
+
+```kotlin
+// In Game.kt
+class Game {
+    // ...
+    private val board = Array(3) { arrayOfNulls<Player>(3) }
+
+    fun play(row: Int, col: Int) {
+        board[row][col] = currentPlayer // Record the move
+        currentPlayer = if (currentPlayer == Player.X) Player.O else Player.X
+    }
+
+    fun getCell(row: Int, col: Int): Player? {
+        return board[row][col]
+    }
+}
+```
+
+The test passes. Our game now has a memory of past moves.
+
+**REFACTOR**: No refactoring is immediately necessary.
+
+### Step 4: Preventing Invalid Moves
+
+**RED**: What if a player tries to play on a cell that is already taken? The game should prevent this.
+
+```kotlin
+// In GameTest.kt
+@Test(expected = GameException.PositionTaken::class)
+fun `playing in a taken position throws exception`() {
+    val game = Game()
+    game.play(0, 0) // X plays
+    game.play(0, 0) // O tries to play on the same spot
+}
+```
+
+This test fails because no exception is thrown. The game currently allows overwriting moves.
+
+**GREEN**: We add a check (a "guard clause") at the beginning of the `play` method.
+
+```kotlin
+// In GameException.kt
+sealed class GameException(message: String) : Exception(message) {
+    data object PositionTaken : GameException("Position already played")
+}
+
+// In Game.kt
+fun play(row: Int, col: Int) {
+    if (board[row][col] != null) {
+        throw GameException.PositionTaken
+    }
+    // ... rest of the method
+}
+```
+
+The test passes. Our game now enforces one of its core rules.
+
+**REFACTOR**: Using a guard clause is a clean pattern. No refactoring is needed.
+
+### Step 5: Declaring a Winner
+
+**RED**: The game needs to know when someone has won. Let's test a simple win condition.
+
+```kotlin
+// In GameTest.kt
+@Test
+fun `playing a winning move updates the winner`() {
+    val game = Game()
+    game.play(0, 0); game.play(1, 0)
+    game.play(0, 1); game.play(1, 1)
+    game.play(0, 2) // X should win here
+    assertEquals(Player.X, game.winner)
+}
+```
+
+This test fails because the `winner` property is always `null`.
+
+**GREEN**: We add win-checking logic to the `play` method.
+
+```kotlin
+// In Game.kt
+fun play(row: Int, col: Int) {
+    // ... guard clauses ...
+    board[row][col] = currentPlayer
+
+    if (checkWin(currentPlayer)) {
+        winner = currentPlayer
+    } else {
+        currentPlayer = if (currentPlayer == Player.X) Player.O else Player.X
+    }
+}
+
+// A simple checkWin for now
+private fun checkWin(player: Player): Boolean {
+    // Row 0 check for Player X
+    return board[0][0] == player && board[0][1] == player && board[0][2] == player
+}
+```
+
+We write the *minimal* code to pass the test, which might only check the specific winning row from the test case.
+
+**REFACTOR**: Now we refactor `checkWin` to be complete, checking all rows, columns, and diagonals to ensure it works for all scenarios, not just the
+one we tested.
+
+### Step 6: Handling a Draw
+
+**RED**: What happens if the board fills up with no winner? It's a draw.
+
+```kotlin
+// In GameTest.kt
+@Test
+fun `playing until a draw updates isDraw`() {
+    // ... sequence of 9 moves that results in no winner ...
+    game.play(2, 1) // Final move
+    assertTrue(game.isDraw)
+}
+```
+
+This test fails because `isDraw` remains `false`.
+
+**GREEN**: We add a move counter to detect when the board is full.
+
+```kotlin
+// In Game.kt
+private var moveCount = 0
+
+fun play(row: Int, col: Int) {
+    // ...
+    board[row][col] = currentPlayer
+    moveCount++
+
+    if (checkWin(currentPlayer)) {
+        winner = currentPlayer
+    } else if (moveCount == 9) { // 9 for a 3x3 grid
+        isDraw = true
+    } else {
+        currentPlayer = if (currentPlayer == Player.X) Player.O else Player.X
+    }
+}
+```
+
+The test passes. The game can now end in a draw.
+
+**REFACTOR**: The hardcoded `9` could be refactored to `size * size` to support dynamic grids in the future.
+
+### Step 7: Ending the Game
+
+**RED**: Can a player make a move after the game is over? They shouldn't be able to.
+
+```kotlin
+// In GameTest.kt
+@Test(expected = GameException.GameOver::class)
+fun `playing after a win throws exception`() {
+    // ... sequence of moves for a win ...
+    game.play(2, 2) // Attempting one more move
+}
+```
+
+The test fails because the game allows moves after a winner is declared.
+
+**GREEN**: We add a final guard clause to the top of the `play` method.
+
+```kotlin
+// In Game.kt
+fun play(row: Int, col: Int) {
+    if (winner != null || isDraw) {
+        throw GameException.GameOver
+    }
+    // ... rest of the method
+}
+```
+
+The test passes. Our `Game` class is now robust and handles all primary scenarios, with its design and logic having been guided entirely by our tests.
+
 ## 5. How to Run the Project
 
 ### Prerequisites
@@ -222,3 +487,51 @@ To check if the current UI matches the saved screenshots:
 ```
 
 *This task runs automatically in the CI pipeline.*
+
+## 7. File Organization
+
+```
+.
+├── app/                  # Android Module (UI)
+│   └── src/main/kotlin/.../app/
+│       ├── TicTacToeApplication.kt
+│       ├── di/           # Dependency Injection
+│       └── ui/
+│           ├── GameScreen.kt  # Main Screen
+│           ├── MainActivity.kt
+│           ├── viewmodel/
+│           │   └── GameViewModel.kt
+│           ├── components/    # Reusable UI Components
+│           │   ├── Board.kt
+│           │   ├── Cell.kt
+│           │   ├── GameControls.kt
+│           │   └── GameStatus.kt
+│           └── theme/         # Custom Theme
+│               ├── Color.kt
+│               ├── Theme.kt
+│               └── Type.kt
+│
+├── data/                 # Data Module (Repository Implementation)
+│   └── src/main/kotlin/.../data/
+│       ├── di/           # Dependency Injection
+│       │   └── DataModule.kt
+│       └── repository/
+│           └── GameRepositoryImpl.kt
+│
+└── domain/               # Domain Module (Pure Business Logic)
+    └── src/main/kotlin/.../domain/
+        ├── model/
+        │   ├── Game.kt
+        │   ├── GameException.kt
+        │   ├── GameState.kt
+        │   └── Player.kt
+        ├── repository/
+        │   └── GameRepository.kt
+        └── usecase/
+            ├── GetGameUseCase.kt
+            ├── GetSnapshotUseCase.kt
+            ├── LoadGameUseCase.kt
+            ├── PlayTurnUseCase.kt
+            └── ResetGameUseCase.kt
+
+```
