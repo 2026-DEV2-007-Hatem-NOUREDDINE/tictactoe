@@ -1,8 +1,33 @@
-# Tic Tac Toe
+# 🎮 Tic Tac Toe
 
+<!-- CI/CD Badges -->
 [![Android CI](https://github.com/2026-DEV2-007-Hatem-NOUREDDINE/tictactoe/actions/workflows/android_check.yml/badge.svg)](https://github.com/2026-DEV2-007-Hatem-NOUREDDINE/tictactoe/actions/workflows/android_check.yml)
+
+<!-- SonarCloud Badges -->
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe&metric=alert_status)](https://sonarcloud.io/dashboard?id=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe&metric=coverage)](https://sonarcloud.io/dashboard?id=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe&metric=bugs)](https://sonarcloud.io/dashboard?id=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe&metric=code_smells)](https://sonarcloud.io/dashboard?id=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe&metric=sqale_index)](https://sonarcloud.io/dashboard?id=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe&metric=security_rating)](https://sonarcloud.io/dashboard?id=2026-DEV2-007-Hatem-NOUREDDINE_tictactoe)
+
+<!-- Technology Badges -->
+![Kotlin](https://img.shields.io/badge/Kotlin-2.1.0-7F52FF?logo=kotlin&logoColor=white)
+![Android](https://img.shields.io/badge/Android-API%2024+-3DDC84?logo=android&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-1.7.6-4285F4?logo=jetpackcompose&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-9.2-02303A?logo=gradle&logoColor=white)
+
+<!-- Code Quality Badges -->
+![Code Style](https://img.shields.io/badge/Code%20Style-ktlint-F37726?logo=kotlin&logoColor=white)
+![Static Analysis](https://img.shields.io/badge/Static%20Analysis-Detekt-orange)
+![License](https://img.shields.io/badge/License-MIT-blue)
+
+<!-- Architecture Badges -->
+![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-blueviolet)
+![TDD](https://img.shields.io/badge/TDD-100%25-brightgreen)
 
 ![Alt text](images/Kata_TicTacToe.png?raw=true "Tic Tac Toe")
 
@@ -16,10 +41,10 @@
 >
 > - X always goes first.
 > - Players cannot play on a played position.
-> - Players alternate placing X’s and O’s on the board until either:
+> - Players alternate placing X's and O's on the board until either:
 > - One player has three in a row, horizontally, vertically or diagonally
 > - All nine squares are filled.
-> - If a player is able to draw three X’s or three O’s in a row, that player wins.
+> - If a player is able to draw three X's or three O's in a row, that player wins.
 > - If all nine squares are filled and neither player has three in a row, the game is a draw.
 >
 > ## Useful link
@@ -28,98 +53,337 @@
 >
 > **IMPORTANT:**  Implement the requirements focusing on **writing the best code** you can produce.
 
+---
+
+## 📋 Table of Contents
+
+1. [Application Architecture](#1-application-architecture)
+2. [Technical Choices](#2-technical-choices)
+3. [Code Quality and CI/CD](#3-code-quality-and-cicd)
+4. [Contribution Guidelines](#4-contribution-guidelines--conventions)
+5. [Test-Driven Development (TDD)](#5-a-deep-dive-into-test-driven-development-tdd)
+6. [How to Run the Project](#6-how-to-run-the-project)
+7. [Screenshot Testing](#7-screenshot-testing-visual-regression)
+8. [File Organization](#8-file-organization)
+
+---
+
 ## 1. Application Architecture
 
-This project follows the **Clean Architecture** pattern, which promotes a separation of concerns and a high degree of independence from external
-frameworks. The architecture is organized into three distinct layers (modules):
+This project follows the **Clean Architecture** pattern, which promotes a separation of concerns and a high degree of independence from external frameworks.
 
-- **`:app` (Presentation Layer)**: Responsible for the UI and user interactions. It is an Android application module that uses Jetpack Compose for the
-  UI and a ViewModel to manage the UI state.
+### Module Dependency Graph
 
-- **`:domain` (Domain Layer)**: Contains the core business logic of the application. It is a pure Kotlin module with no dependencies on the Android
-  framework. This layer defines the rules of the game and is completely reusable.
+```mermaid
+graph TB
+    subgraph "📱 Presentation Layer"
+        APP[":app<br/>Android UI"]
+    end
+    
+    subgraph "🧠 Domain Layer"
+        DOMAIN[":domain<br/>Business Logic"]
+    end
+    
+    subgraph "💾 Data Layer"
+        DATA[":data<br/>Repository"]
+    end
+    
+    APP -->|"uses"| DOMAIN
+    DATA -->|"implements"| DOMAIN
+    
+    style APP fill:#4CAF50,color:#fff
+    style DOMAIN fill:#2196F3,color:#fff
+    style DATA fill:#FF9800,color:#fff
+```
 
-- **`:data` (Data Layer)**: Manages the data sources for the application. In this project, it holds the in-memory representation of the game state and
-  could be extended to include data persistence (e.g., saving game state to a database or preferences).
+### Data Flow
 
-### Key Principles:
+```mermaid
+sequenceDiagram
+    participant UI as 📱 GameScreen
+    participant VM as 🎛️ ViewModel
+    participant UC as ⚙️ UseCase
+    participant REPO as 💾 Repository
+    participant GAME as 🎮 Game
+    
+    UI->>VM: User taps cell (row, col)
+    VM->>UC: PlayTurnUseCase.invoke(row, col)
+    UC->>REPO: getGame()
+    REPO-->>UC: Game instance
+    UC->>GAME: play(row, col)
+    GAME-->>UC: Updated state
+    UC->>REPO: saveSnapshot()
+    UC-->>VM: Result<GameState>
+    VM-->>UI: Update BoardUiState
+```
 
-- **Dependency Rule**: The layers have a strict dependency rule: `:app` depends on `:domain`, and `:data` depends on `:domain`. The `:domain` layer
-  has no dependencies on the other layers. This ensures that the core business logic remains independent and reusable.
+### Component Details
 
-- **SOLID Principles**: The architecture adheres to SOLID principles, promoting a modular, maintainable, and scalable codebase.
+```mermaid
+classDiagram
+    class Game {
+        +currentPlayer: Player
+        +winner: Player?
+        +isDraw: Boolean
+        +play(row, col)
+        +getCell(row, col)
+        +getSnapshot()
+        +restore(state)
+    }
+    
+    class GameViewModel {
+        +uiState: StateFlow
+        +play(row, col)
+        +reset(size)
+    }
+    
+    class GameRepository {
+        <<interface>>
+        +getGame(): Game
+        +saveSnapshot(state)
+        +loadSnapshot(): GameState?
+    }
+    
+    class PlayTurnUseCase {
+        +invoke(row, col): Result
+    }
+    
+    GameViewModel --> PlayTurnUseCase
+    PlayTurnUseCase --> GameRepository
+    GameRepository <|.. GameRepositoryImpl
+    GameRepositoryImpl --> Game
+```
 
-- **Single Responsibility**: Each layer and class has a single, well-defined responsibility.
+### Layer Descriptions
+
+| Layer | Module | Responsibility |
+|-------|--------|----------------|
+| **Presentation** | `:app` | UI, ViewModel, Compose components |
+| **Domain** | `:domain` | Game logic, UseCases, Repository interface |
+| **Data** | `:data` | Repository implementation, data persistence |
+
+### Key Principles
+
+```mermaid
+mindmap
+  root((Clean Architecture))
+    Dependency Rule
+      App depends on Domain
+      Data depends on Domain
+      Domain has NO dependencies
+    SOLID Principles
+      Single Responsibility
+      Open/Closed
+      Liskov Substitution
+      Interface Segregation
+      Dependency Inversion
+    Benefits
+      Testability
+      Maintainability
+      Scalability
+```
+
+---
 
 ## 2. Technical Choices
 
-- **Kotlin**: The official language for modern Android development, providing conciseness, safety, and excellent tooling support.
+### Technology Stack
 
-- **Jetpack Compose**: A modern declarative UI toolkit for building native Android UI. It simplifies UI development and allows for a more reactive and
-  maintainable UI.
+```mermaid
+graph LR
+    subgraph "🎨 UI"
+        COMPOSE[Jetpack Compose]
+        M3[Material 3]
+    end
+    
+    subgraph "🏗️ Architecture"
+        CLEAN[Clean Architecture]
+        MVVM[MVVM Pattern]
+    end
+    
+    subgraph "🔧 DI"
+        HILT[Hilt/Dagger]
+    end
+    
+    subgraph "🧪 Testing"
+        JUNIT[JUnit 5]
+        MOCKK[MockK]
+        ROBORAZZI[Roborazzi]
+    end
+    
+    subgraph "📊 Quality"
+        DETEKT[Detekt]
+        KTLINT[KtLint]
+        JACOCO[JaCoCo]
+    end
+```
 
-- **Hilt**: A dependency injection library for Android that simplifies the management of dependencies and improves testability.
+| Technology | Purpose |
+|------------|---------|
+| **Kotlin** | Official language for modern Android development |
+| **Jetpack Compose** | Modern declarative UI toolkit for native Android |
+| **Hilt** | Dependency injection for improved testability |
+| **Clean Architecture** | Separation of concerns and maintainability |
+| **JUnit 5** | Modern testing framework with nested tests support |
+| **MockK** | Kotlin-native mocking library |
+| **Roborazzi** | Screenshot testing for visual regression |
 
-- **Clean Architecture**: Chosen to create a clear separation of concerns, making the codebase easier to maintain, test, and scale.
+### UI Features
 
-- **Edge-to-Edge Display**: The app provides a modern, immersive UI by drawing content behind the system bars, creating a seamless, edge-to-edge
-  experience.
+- **Edge-to-Edge Display**: Modern, immersive UI drawing behind system bars
+- **Material 3**: Following the latest Material Design guidelines
+- **Animations**: Smooth shake animation on game over
+- **Haptic Feedback**: Tactile feedback for user actions
+
+---
 
 ## 3. Code Quality and CI/CD
 
-To maintain a high standard of code quality and ensure the long-term health of the project, we integrate several static analysis tools and automate
-our checks using GitHub Actions.
+### Quality Tools Overview
 
-### Code Quality Tools
-
-| Tool             | Purpose                                                               |
-|------------------|-----------------------------------------------------------------------|
-| **Detekt**       | Static code analysis for Kotlin, detecting code smells and complexity |
-| **KtLint**       | Linter and formatter enforcing official Kotlin style guides           |
-| **Android Lint** | Android-specific checks for performance, security, and best practices |
-| **JaCoCo**       | Code coverage reporting for unit and instrumentation tests            |
-| **SonarCloud**   | Continuous inspection platform tracking overall code health           |
+```mermaid
+graph TB
+    subgraph "📝 Code"
+        CODE[Source Code]
+    end
+    
+    subgraph "🔍 Static Analysis"
+        DETEKT[Detekt<br/>Code Smells]
+        KTLINT[KtLint<br/>Code Style]
+        LINT[Android Lint<br/>Best Practices]
+    end
+    
+    subgraph "🧪 Testing"
+        UNIT[Unit Tests]
+        INSTR[Instrumentation Tests]
+        SCREENSHOT[Screenshot Tests]
+    end
+    
+    subgraph "📊 Coverage"
+        JACOCO[JaCoCo]
+    end
+    
+    subgraph "☁️ Cloud"
+        SONAR[SonarCloud]
+    end
+    
+    CODE --> DETEKT
+    CODE --> KTLINT
+    CODE --> LINT
+    CODE --> UNIT
+    CODE --> INSTR
+    CODE --> SCREENSHOT
+    
+    UNIT --> JACOCO
+    INSTR --> JACOCO
+    
+    DETEKT --> SONAR
+    KTLINT --> SONAR
+    LINT --> SONAR
+    JACOCO --> SONAR
+```
 
 ### CI/CD Pipeline Architecture
 
 Our CI pipeline uses **6 parallel jobs** for maximum efficiency:
 
 ```mermaid
-graph LR
-    A[🏗️ Build] --> B[🔍 Lint]
-    A --> C[🧪 Test]
-    A --> D[📸 Screenshot]
-    B --> E[📱 Instrumentation]
-    C --> E
-    E --> F[🔎 SonarCloud]
+flowchart LR
+    subgraph "Stage 1"
+        BUILD[🏗️ Build]
+    end
+    
+    subgraph "Stage 2"
+        LINT[🔍 Lint]
+        TEST[🧪 Test]
+        SCREEN[📸 Screenshot]
+    end
+    
+    subgraph "Stage 3"
+        INSTR[📱 Instrumentation]
+    end
+    
+    subgraph "Stage 4"
+        SONAR[🔎 SonarCloud]
+    end
+    
+    BUILD --> LINT
+    BUILD --> TEST
+    BUILD --> SCREEN
+    
+    LINT --> INSTR
+    TEST --> INSTR
+    
+    INSTR --> SONAR
+    TEST --> SONAR
+    
+    style BUILD fill:#4CAF50,color:#fff
+    style LINT fill:#2196F3,color:#fff
+    style TEST fill:#9C27B0,color:#fff
+    style SCREEN fill:#FF9800,color:#fff
+    style INSTR fill:#E91E63,color:#fff
+    style SONAR fill:#00BCD4,color:#fff
 ```
 
-| Job                 | Description                          | Depends On            |
-|---------------------|--------------------------------------|-----------------------|
-| **Build**           | Compiles debug APK, caches artifacts | -                     |
-| **Lint**            | Runs Detekt, KtLint, Android Lint    | Build                 |
-| **Test**            | Unit tests with JaCoCo coverage      | Build                 |
-| **Screenshot**      | Roborazzi visual regression tests    | Build                 |
-| **Instrumentation** | Emulator-based UI tests              | Lint, Test            |
-| **SonarCloud**      | Code quality analysis                | Test, Instrumentation |
+| Job | Description | Depends On |
+|-----|-------------|------------|
+| **Build** | Compiles debug APK, caches artifacts | - |
+| **Lint** | Runs Detekt, KtLint, Android Lint | Build |
+| **Test** | Unit tests with JaCoCo coverage | Build |
+| **Screenshot** | Roborazzi visual regression tests | Build |
+| **Instrumentation** | Emulator-based UI tests | Lint, Test |
+| **SonarCloud** | Code quality analysis | Test, Instrumentation |
+
+### JaCoCo Coverage Tasks
+
+```mermaid
+graph TD
+    subgraph "Unit Tests Only 🚀"
+        JACOCO_TEST[jacocoTestReport]
+    end
+    
+    subgraph "Instrumentation Only 📱"
+        JACOCO_INSTR[jacocoInstrumentationReport]
+    end
+    
+    subgraph "Full Coverage 📊"
+        JACOCO_FULL[jacocoFullReport]
+    end
+    
+    JACOCO_TEST --> JACOCO_FULL
+    JACOCO_INSTR --> JACOCO_FULL
+```
+
+```bash
+# Unit tests coverage only (fast, debug variant)
+./gradlew jacocoTestReport
+
+# Instrumentation tests coverage only (requires emulator)
+./gradlew jacocoInstrumentationReport
+
+# Full coverage report (unit + instrumentation)
+./gradlew jacocoFullReport
+```
 
 ### Test Coverage by Module
 
-- **`:app`** — Unit tests, Screenshot tests (Roborazzi), Instrumented tests (Emulator)
-- **`:domain`** — Unit tests only (pure Kotlin/JVM)
-- **`:data`** — Unit tests only
+| Module | Test Types | Coverage Target |
+|--------|------------|-----------------|
+| `:app` | Unit, Screenshot, Instrumented | 80% |
+| `:domain` | Unit (TDD) | 100% |
+| `:data` | Unit | 80% |
 
 ### Key CI Features
 
-- **⚡ Gradle Build Cache**: Uses `gradle/actions/setup-gradle@v4` for intelligent caching, significantly reducing build times.
-- **🔄 Concurrency Control**: Automatically cancels redundant workflow runs when new commits are pushed.
-- **📊 Rich Summaries**: Each job generates a detailed summary including:
-    - Test execution counts (passed/failed/skipped)
-    - Per-module code coverage with color indicators
-    - List of classes needing more tests
-    - Failed test details
-- **🎚️ KVM Acceleration**: Emulator tests use KVM for faster execution.
-- **📦 Artifact Uploads**: Lint reports, test results, and screenshot diffs are uploaded on failure.
+- **⚡ Gradle Build Cache**: Intelligent caching for faster builds
+- **🔄 Concurrency Control**: Cancels redundant workflow runs
+- **📊 Rich Summaries**: Detailed GitHub Step Summaries with:
+    - Test counts (passed/failed/skipped)
+    - Coverage with visual progress bars
+    - Links to HTML reports
+    - Screenshot comparisons
+- **🎚️ KVM Acceleration**: Faster emulator tests
+- **📦 Artifact Uploads**: All reports downloadable
 
 ### Running Locally
 
@@ -128,410 +392,424 @@ graph LR
 ./gradlew assembleDebug detekt ktlintCheck lintDebug testDebugUnitTest
 
 # Coverage report
-./gradlew testDebugUnitTestCoverage
+./gradlew jacocoTestReport
 
 # Screenshot tests
 ./gradlew verifyRoborazziDebug
+
+# Record new screenshots
+./gradlew recordRoborazziDebug
 ```
 
 ### Required GitHub Secrets
 
-| Secret                   | Description                         |
-|--------------------------|-------------------------------------|
-| `SONAR_TOKEN`            | Authentication token for SonarCloud |
-| `SONAR_PROJECT_KEY`      | Your SonarCloud project identifier  |
-| `SONAR_ORGANIZATION_KEY` | Your SonarCloud organization        |
+| Secret | Description |
+|--------|-------------|
+| `SONAR_TOKEN` | Authentication token for SonarCloud |
+| `SONAR_PROJECT_KEY` | Your SonarCloud project identifier |
+| `SONAR_ORGANIZATION_KEY` | Your SonarCloud organization |
 
-This automated workflow ensures that every contribution is automatically checked for style, potential bugs, and failing tests, maintaining the overall
-quality and stability of the application.
+---
 
 ## 4. Contribution Guidelines & Conventions
 
-### git-hooks
+### Git Workflow
 
-This project uses Git hooks to automate checks locally. To install them, run:
+```mermaid
+gitGraph
+    commit id: "main"
+    branch feature/new-ui
+    checkout feature/new-ui
+    commit id: "feat: add board"
+    commit id: "test: add tests"
+    checkout main
+    merge feature/new-ui id: "PR merge"
+    commit id: "release"
+```
+
+### Git Hooks
+
+Install them with:
 
 ```bash
 ./gradlew installGitHooks
 ```
 
-### Code Style
+### Commit Convention
 
-- **Kotlin**: We follow the official Kotlin Coding Conventions.
-- **Hooks**: A `pre-commit` hook automatically formatting your code using KtLint before every commit.
+We follow **Conventional Commits**:
 
-### Commit Messages
+```mermaid
+graph LR
+    subgraph "Commit Structure"
+        TYPE[type] --> SCOPE["(scope)"]
+        SCOPE --> SUBJECT[": subject"]
+    end
+    
+    subgraph "Types"
+        FEAT[feat ✨]
+        FIX[fix 🐛]
+        DOCS[docs 📚]
+        TEST[test 🧪]
+        REFACTOR[refactor ♻️]
+    end
+```
 
-We follow **Conventional Commits**: `<type>(<scope>): <subject>`
+| Type | Description | Example |
+|------|-------------|---------|
+| `feat` | New feature | `feat(ui): add game board` |
+| `fix` | Bug fix | `fix(game): correct win detection` |
+| `docs` | Documentation | `docs: update README` |
+| `test` | Tests | `test(game): add TDD tests` |
+| `refactor` | Code refactoring | `refactor: extract helper` |
+| `style` | Formatting | `style: apply ktlint` |
+| `chore` | Maintenance | `chore: update deps` |
+| `ci` | CI changes | `ci: add sonar job` |
 
-- **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `build`, `ci`
-- **Example**: `feat(ui): add new game board component`
-- **Hook**: A `commit-msg` hook validates your commit messages.
+### Branch Naming
 
-### Branch Cleanliness
+```mermaid
+graph LR
+    FEATURE[feature/] --> DESC1[description]
+    BUGFIX[bugfix/] --> DESC2[description]
+    HOTFIX[hotfix/] --> DESC3[description]
+    RELEASE[release/] --> VERSION[version]
+```
 
-- **Naming**: Use standard prefixes: `feature/`, `bugfix/`, `hotfix/`, `release/`
-- **Hook**: A `pre-push` hook validates branch names.
+---
 
-## 4. A Deep Dive into Test-Driven Development (TDD)
+## 5. A Deep Dive into Test-Driven Development (TDD)
 
-Test-Driven Development (TDD) is not just about writing tests; it's a design process. By writing a failing test *before* writing the implementation
-code, we let the tests guide the design of our application. The process follows a simple, repetitive cycle:
+### The TDD Cycle
 
-1. **Red**: Write a small, failing test for a single new feature.
-2. **Green**: Write the *absolute minimum* amount of code required to make the test pass.
-3. **Refactor**: Clean up the code to improve its structure and maintainability without changing its behavior.
+```mermaid
+graph LR
+    RED["🔴 RED<br/>Write failing test"] --> GREEN["🟢 GREEN<br/>Write minimal code"]
+    GREEN --> REFACTOR["🔵 REFACTOR<br/>Clean up code"]
+    REFACTOR --> RED
+    
+    style RED fill:#f44336,color:#fff
+    style GREEN fill:#4CAF50,color:#fff
+    style REFACTOR fill:#2196F3,color:#fff
+```
 
-This section simulates how the `Game` class was built from the ground up using this TDD workflow.
+### TDD Timeline for Game Class
 
-### Step 1: Defining the Game's Initial State
+```mermaid
+timeline
+    title Building Game.kt with TDD
+    
+    section Initial State
+        Step 1 : Write test for currentPlayer = X
+               : Create Game class with initial state
+    
+    section Making Moves
+        Step 2 : Write test for player switching
+               : Add play() method
+        Step 3 : Write test for recording moves
+               : Add board and getCell()
+    
+    section Validation
+        Step 4 : Write test for PositionTaken
+               : Add guard clause for occupied cells
+        Step 5 : Write test for InvalidPosition
+               : Add bounds checking
+    
+    section Win Detection
+        Step 6 : Write test for horizontal win
+               : Add checkWin() for rows
+        Step 7 : Write test for vertical win
+               : Extend checkWin() for columns
+        Step 8 : Write test for diagonal win
+               : Extend checkWin() for diagonals
+    
+    section Game Over
+        Step 9 : Write test for draw
+               : Add moveCount and isDraw
+        Step 10 : Write test for GameOver exception
+                : Add guard clause for ended games
+```
 
-**RED**: We start with nothing. Our first goal is to define what a new game looks like. We write a test for a `Game` class that doesn't exist yet.
+### Test Structure Mapping to Rules
+
+```mermaid
+graph TD
+    subgraph "GameTest.kt Structure"
+        ROOT[Tic-Tac-Toe Game Rules]
+        
+        ROOT --> R1[Rule 1: X always goes first]
+        ROOT --> R2[Rule 2: Cannot play on played position]
+        ROOT --> R3[Rule 3: Players alternate]
+        ROOT --> R4[Rule 4: Three in a row ends game]
+        ROOT --> R5[Rule 5: Three in a row = win]
+        ROOT --> R6[Rule 6: Full board = draw]
+        
+        R4 --> R4H[Horizontal Wins]
+        R4 --> R4V[Vertical Wins]
+        R4 --> R4D[Diagonal Wins]
+        R4 --> R4O[Game Over]
+    end
+    
+    style ROOT fill:#9C27B0,color:#fff
+    style R1 fill:#4CAF50,color:#fff
+    style R2 fill:#f44336,color:#fff
+    style R3 fill:#2196F3,color:#fff
+    style R4 fill:#FF9800,color:#fff
+    style R5 fill:#00BCD4,color:#fff
+    style R6 fill:#E91E63,color:#fff
+```
+
+### TDD Step-by-Step Example
+
+#### Step 1: Initial State (Rule 1)
+
+**🔴 RED**: Write a failing test
 
 ```kotlin
-// In GameTest.kt
 @Test
-fun `initial state is correct`() {
-    val game = Game() // Fails: 'Game' class does not exist
+fun `new game should start with Player X`() {
+    val game = Game() // ❌ Fails: Game doesn't exist
     assertEquals(Player.X, game.currentPlayer)
-    assertNull(game.winner)
-    assertFalse(game.isDraw)
 }
 ```
 
-This test immediately fails because we have no `Game` class.
-
-**GREEN**: We write the simplest possible code to make the test pass.
+**🟢 GREEN**: Write minimal code
 
 ```kotlin
-// In Game.kt
-enum class Player { X, O }
-
 class Game {
     val currentPlayer: Player = Player.X
-    val winner: Player? = null
-    val isDraw: Boolean = false
 }
 ```
 
-The test now passes. We have defined the initial state of our game.
+#### Step 2: Making Moves (Rule 3)
 
-**REFACTOR**: The code is trivial. No refactoring is needed.
-
-### Step 2: Making the First Move
-
-**RED**: How does the game change when a player makes a move? Let's test that the current player switches from X to O.
+**🔴 RED**: Test player switching
 
 ```kotlin
-// In GameTest.kt
 @Test
-fun `playing a move updates current player`() {
+fun `after X plays, it should be O's turn`() {
     val game = Game()
-    game.play(0, 0) // Fails: 'play' method does not exist
+    game.play(0, 0) // ❌ Fails: play() doesn't exist
     assertEquals(Player.O, game.currentPlayer)
 }
 ```
 
-**GREEN**: We add a placeholder `play` method to `Game.kt` and change `currentPlayer` to be a `var`.
+**🟢 GREEN**: Add play method
 
 ```kotlin
-// In Game.kt
-class Game {
-    var currentPlayer: Player = Player.X
-        private set // Encapsulate state change
-    // ... other properties
-
-    fun play(row: Int, col: Int) {
-        currentPlayer = Player.O
-    }
+fun play(row: Int, col: Int) {
+    currentPlayer = Player.O
 }
 ```
 
-The test passes. We have a concept of "playing a turn."
-
-**REFACTOR**: We can make the setter for `currentPlayer` private to ensure it can only be changed by the `Game` class itself. This encapsulation is a
-good first refactor.
-
-### Step 3: Recording the Move
-
-**RED**: The player changed, but where did their 'X' go? We need to record moves on a board.
+**🔵 REFACTOR**: Make it generic
 
 ```kotlin
-// In GameTest.kt
+fun play(row: Int, col: Int) {
+    currentPlayer = if (currentPlayer == Player.X) Player.O else Player.X
+}
+```
+
+#### Step 3: Invalid Moves (Rule 2)
+
+**🔴 RED**: Test occupied cell
+
+```kotlin
 @Test
-fun `playing a move updates the board`() {
+fun `playing on occupied cell should throw PositionTaken`() {
     val game = Game()
     game.play(0, 0)
-    assertEquals(Player.X, game.getCell(0, 0)) // Fails: `getCell` does not exist
-}
-```
-
-**GREEN**: We add a board and a way to query it. We also fix the player-switching logic, which was too simple before.
-
-```kotlin
-// In Game.kt
-class Game {
-    // ...
-    private val board = Array(3) { arrayOfNulls<Player>(3) }
-
-    fun play(row: Int, col: Int) {
-        board[row][col] = currentPlayer // Record the move
-        currentPlayer = if (currentPlayer == Player.X) Player.O else Player.X
-    }
-
-    fun getCell(row: Int, col: Int): Player? {
-        return board[row][col]
+    assertThrows<GameException.PositionTaken> {
+        game.play(0, 0) // ❌ Fails: no exception thrown
     }
 }
 ```
 
-The test passes. Our game now has a memory of past moves.
-
-**REFACTOR**: No refactoring is immediately necessary.
-
-### Step 4: Preventing Invalid Moves
-
-**RED**: What if a player tries to play on a cell that is already taken? The game should prevent this.
+**🟢 GREEN**: Add guard clause
 
 ```kotlin
-// In GameTest.kt
-@Test(expected = GameException.PositionTaken::class)
-fun `playing in a taken position throws exception`() {
-    val game = Game()
-    game.play(0, 0) // X plays
-    game.play(0, 0) // O tries to play on the same spot
-}
-```
-
-This test fails because no exception is thrown. The game currently allows overwriting moves.
-
-**GREEN**: We add a check (a "guard clause") at the beginning of the `play` method.
-
-```kotlin
-// In GameException.kt
-sealed class GameException(message: String) : Exception(message) {
-    data object PositionTaken : GameException("Position already played")
-}
-
-// In Game.kt
 fun play(row: Int, col: Int) {
     if (board[row][col] != null) {
-        throw GameException.PositionTaken
+        throw GameException.PositionTaken()
     }
-    // ... rest of the method
+    // ... rest of method
 }
 ```
 
-The test passes. Our game now enforces one of its core rules.
+---
 
-**REFACTOR**: Using a guard clause is a clean pattern. No refactoring is needed.
-
-### Step 5: Declaring a Winner
-
-**RED**: The game needs to know when someone has won. Let's test a simple win condition.
-
-```kotlin
-// In GameTest.kt
-@Test
-fun `playing a winning move updates the winner`() {
-    val game = Game()
-    game.play(0, 0); game.play(1, 0)
-    game.play(0, 1); game.play(1, 1)
-    game.play(0, 2) // X should win here
-    assertEquals(Player.X, game.winner)
-}
-```
-
-This test fails because the `winner` property is always `null`.
-
-**GREEN**: We add win-checking logic to the `play` method.
-
-```kotlin
-// In Game.kt
-fun play(row: Int, col: Int) {
-    // ... guard clauses ...
-    board[row][col] = currentPlayer
-
-    if (checkWin(currentPlayer)) {
-        winner = currentPlayer
-    } else {
-        currentPlayer = if (currentPlayer == Player.X) Player.O else Player.X
-    }
-}
-
-// A simple checkWin for now
-private fun checkWin(player: Player): Boolean {
-    // Row 0 check for Player X
-    return board[0][0] == player && board[0][1] == player && board[0][2] == player
-}
-```
-
-We write the *minimal* code to pass the test, which might only check the specific winning row from the test case.
-
-**REFACTOR**: Now we refactor `checkWin` to be complete, checking all rows, columns, and diagonals to ensure it works for all scenarios, not just the
-one we tested.
-
-### Step 6: Handling a Draw
-
-**RED**: What happens if the board fills up with no winner? It's a draw.
-
-```kotlin
-// In GameTest.kt
-@Test
-fun `playing until a draw updates isDraw`() {
-    // ... sequence of 9 moves that results in no winner ...
-    game.play(2, 1) // Final move
-    assertTrue(game.isDraw)
-}
-```
-
-This test fails because `isDraw` remains `false`.
-
-**GREEN**: We add a move counter to detect when the board is full.
-
-```kotlin
-// In Game.kt
-private var moveCount = 0
-
-fun play(row: Int, col: Int) {
-    // ...
-    board[row][col] = currentPlayer
-    moveCount++
-
-    if (checkWin(currentPlayer)) {
-        winner = currentPlayer
-    } else if (moveCount == 9) { // 9 for a 3x3 grid
-        isDraw = true
-    } else {
-        currentPlayer = if (currentPlayer == Player.X) Player.O else Player.X
-    }
-}
-```
-
-The test passes. The game can now end in a draw.
-
-**REFACTOR**: The hardcoded `9` could be refactored to `size * size` to support dynamic grids in the future.
-
-### Step 7: Ending the Game
-
-**RED**: Can a player make a move after the game is over? They shouldn't be able to.
-
-```kotlin
-// In GameTest.kt
-@Test(expected = GameException.GameOver::class)
-fun `playing after a win throws exception`() {
-    // ... sequence of moves for a win ...
-    game.play(2, 2) // Attempting one more move
-}
-```
-
-The test fails because the game allows moves after a winner is declared.
-
-**GREEN**: We add a final guard clause to the top of the `play` method.
-
-```kotlin
-// In Game.kt
-fun play(row: Int, col: Int) {
-    if (winner != null || isDraw) {
-        throw GameException.GameOver
-    }
-    // ... rest of the method
-}
-```
-
-The test passes. Our `Game` class is now robust and handles all primary scenarios, with its design and logic having been guided entirely by our tests.
-
-## 5. How to Run the Project
+## 6. How to Run the Project
 
 ### Prerequisites
 
-* JDK 21 or higher.
-* Android Studio Otter 2 or higher.
+```mermaid
+graph LR
+    JDK[JDK 21+] --> STUDIO[Android Studio]
+    STUDIO --> PROJECT[Open Project]
+    PROJECT --> RUN[Run App]
+```
+
+* JDK 21 or higher
+* Android Studio Ladybug or higher
 
 ### Commands
 
-**Run Unit Tests (TDD Check):**
-
 ```bash
+# Run Unit Tests (TDD Check)
 ./gradlew :domain:test
-```
 
-**Build the Application:**
-
-```bash
+# Build the Application
 ./gradlew :app:assembleDebug
+
+# Install on device
+./gradlew :app:installDebug
+
+# Run all tests with coverage
+./gradlew jacocoTestReport
 ```
 
-(Or just click "Run" in Android Studio)
+---
 
-## 6. Screenshot Testing (Visual Regression)
+## 7. Screenshot Testing (Visual Regression)
 
-This project uses **Roborazzi** to ensure pixel-perfect UI regression testing.
+### Roborazzi Workflow
 
-### **Record Screenshots**
+```mermaid
+flowchart TD
+    subgraph "Development"
+        CODE[Make UI Changes]
+        RECORD[./gradlew recordRoborazziDebug]
+        COMMIT[Commit Snapshots]
+    end
+    
+    subgraph "CI Pipeline"
+        CI_VERIFY[./gradlew verifyRoborazziDebug]
+        PASS{Match?}
+        SUCCESS[✅ Pass]
+        FAIL[❌ Fail + Upload Diff]
+    end
+    
+    CODE --> RECORD
+    RECORD --> COMMIT
+    COMMIT --> CI_VERIFY
+    CI_VERIFY --> PASS
+    PASS -->|Yes| SUCCESS
+    PASS -->|No| FAIL
+```
 
-To generate or update the golden images (snapshots), run:
+### Commands
 
 ```bash
+# Record new/updated screenshots
 ./gradlew recordRoborazziDebug
-```
 
-*Screenshots will be saved in `app/src/test/snapshots`.*
-
-### **Verify Screenshots**
-
-To check if the current UI matches the saved screenshots:
-
-```bash
+# Verify screenshots match
 ./gradlew verifyRoborazziDebug
 ```
 
-*This task runs automatically in the CI pipeline.*
+### Handling Failures
 
-## 7. File Organization
+1. Download the `screenshot-report` artifact
+2. Open `index.html` to compare expected vs actual
+3. If changes are intentional:
+   ```bash
+   ./gradlew recordRoborazziDebug
+   ```
+4. Commit the updated snapshots
+
+---
+
+## 8. File Organization
+
+```mermaid
+graph TD
+    ROOT[tictactoe/]
+    
+    ROOT --> APP[app/]
+    ROOT --> DATA[data/]
+    ROOT --> DOMAIN[domain/]
+    ROOT --> BUILD_LOGIC[build-logic/]
+    ROOT --> SNAPSHOTS[snapshots/]
+    ROOT --> GITHUB[.github/]
+    
+    APP --> APP_MAIN[main/kotlin/.../app/]
+    APP --> APP_TEST[test/]
+    APP --> APP_ANDROID[androidTest/]
+    
+    APP_MAIN --> UI[ui/]
+    UI --> VIEWMODEL[viewmodel/]
+    UI --> COMPONENTS[components/]
+    UI --> THEME[theme/]
+    
+    DOMAIN --> DOMAIN_MAIN[main/kotlin/.../domain/]
+    DOMAIN --> DOMAIN_TEST[test/]
+    
+    DOMAIN_MAIN --> MODEL[model/]
+    DOMAIN_MAIN --> USECASE[usecase/]
+    DOMAIN_MAIN --> REPO_INT[repository/]
+    
+    MODEL --> GAME[Game.kt]
+    MODEL --> PLAYER[Player.kt]
+    MODEL --> EXCEPTION[GameException.kt]
+    
+    style ROOT fill:#9C27B0,color:#fff
+    style APP fill:#4CAF50,color:#fff
+    style DATA fill:#FF9800,color:#fff
+    style DOMAIN fill:#2196F3,color:#fff
+    style GAME fill:#E91E63,color:#fff
+```
+
+### Directory Structure
 
 ```
 .
-├── app/                  # Android Module (UI)
-│   └── src/main/kotlin/.../app/
-│       ├── TicTacToeApplication.kt
-│       ├── di/           # Dependency Injection
-│       └── ui/
-│           ├── GameScreen.kt  # Main Screen
-│           ├── MainActivity.kt
-│           ├── viewmodel/
-│           │   └── GameViewModel.kt
-│           ├── components/    # Reusable UI Components
-│           │   ├── Board.kt
-│           │   ├── Cell.kt
-│           │   ├── GameControls.kt
-│           │   └── GameStatus.kt
-│           └── theme/         # Custom Theme
-│               ├── Color.kt
-│               ├── Theme.kt
-│               └── Type.kt
+├── app/                  # 📱 Android Module (UI)
+│   └── src/
+│       ├── main/kotlin/.../app/
+│       │   ├── ui/
+│       │   │   ├── GameScreen.kt
+│       │   │   ├── viewmodel/GameViewModel.kt
+│       │   │   ├── components/{Board, Cell, GameControls, GameStatus}.kt
+│       │   │   └── theme/{Color, Theme, Type}.kt
+│       │   └── di/
+│       ├── test/             # Unit + Screenshot tests
+│       └── androidTest/      # Instrumentation tests
 │
-├── data/                 # Data Module (Repository Implementation)
+├── data/                 # 💾 Data Module
 │   └── src/main/kotlin/.../data/
-│       ├── di/           # Dependency Injection
-│       │   └── DataModule.kt
-│       └── repository/
-│           └── GameRepositoryImpl.kt
+│       ├── di/DataModule.kt
+│       └── repository/GameRepositoryImpl.kt
 │
-└── domain/               # Domain Module (Pure Business Logic)
-    └── src/main/kotlin/.../domain/
-        ├── model/
-        │   ├── Game.kt
-        │   ├── GameException.kt
-        │   ├── GameState.kt
-        │   └── Player.kt
-        ├── repository/
-        │   └── GameRepository.kt
-        └── usecase/
-            ├── GetGameUseCase.kt
-            ├── GetSnapshotUseCase.kt
-            ├── LoadGameUseCase.kt
-            ├── PlayTurnUseCase.kt
-            └── ResetGameUseCase.kt
-
+├── domain/               # 🧠 Domain Module (Pure Kotlin)
+│   └── src/
+│       ├── main/kotlin/.../domain/
+│       │   ├── model/{Game, Player, GameState, GameException}.kt
+│       │   ├── repository/GameRepository.kt
+│       │   └── usecase/{PlayTurn, Reset, Load, GetSnapshot}UseCase.kt
+│       └── test/             # TDD unit tests
+│
+├── build-logic/          # 🔧 Convention Plugins
+│   └── convention/
+│       └── src/main/kotlin/
+│           ├── JacocoConventionPlugin.kt
+│           ├── JacocoReportConventionPlugin.kt
+│           └── SonarConventionPlugin.kt
+│
+├── snapshots/            # 📸 Roborazzi golden images
+│   └── roborazzi/
+│
+└── .github/workflows/    # 🚀 CI/CD
+    └── android_check.yml
 ```
+
+---
+
+## 📄 License
+
+This project is created for the BNP Paribas Kata exercise.
+
+---
+
+<p align="center">
+  Made with ❤️ using Test-Driven Development
+</p>

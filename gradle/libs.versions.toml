@@ -27,6 +27,8 @@ robolectric = "4.16"
 sonarqube = "7.2.2.6593"
 targetSdk = "36"
 roborazzi = "1.56.0"
+junitVintage = "5.10.0"
+jacoco = "0.8.14"
 
 [libraries]
 # AndroidX
@@ -71,6 +73,7 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-core = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
 roborazzi-junit-rule = { group = "io.github.takahirom.roborazzi", name = "roborazzi-junit-rule", version.ref = "roborazzi" }
+junit-vintage = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junitVintage" }
 
 # Tools
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
@@ -94,7 +97,7 @@ compose-debug = ["androidx-ui-tooling", "androidx-ui-test-manifest"]
 lifecycle = ["androidx-lifecycle-runtime-ktx", "androidx-lifecycle-runtime-compose", "androidx-lifecycle-viewmodel-compose"]
 testing-unit = ["junit", "mockk", "kotlinx-coroutines-test", "assertj-core", "junit-jupiter-api", "junit-jupiter-engine", "junit-platform-launcher"]
 testing-android = ["androidx-junit", "androidx-espresso-core", "androidx-ui-test-junit4", "hilt-android-testing"]
-testing-roborazzi = ["roborazzi-compose", "roborazzi-core", "roborazzi-junit-rule"]
+testing-roborazzi = ["roborazzi-compose", "roborazzi-core", "roborazzi-junit-rule", "junit-vintage"]
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -108,4 +111,5 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 internal-sonarqube = { id = "com.hatem.noureddine.tictactoe.sonarqube", version = "unspecified" }
+internal-jacoco = { id = "com.hatem.noureddine.tictactoe.jacoco.report", version = "unspecified" }
 

@@ -16,7 +16,10 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "com.hatem.noureddine.tictactoe.app.CustomTestRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Clear app state between tests
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -43,6 +46,7 @@ android {
         unitTests {
             isIncludeAndroidResources = true
         }
+
         managedDevices {
             localDevices {
                 // Primary device: Smallest screen, ATD image (fastest for CI)
